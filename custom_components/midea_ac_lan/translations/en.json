@@ -658,6 +658,9 @@
       }
     },
     "switch": {
+      "child_lock": {
+        "name": "Child Lock"
+      },
       "anion": {
         "name": "Anion"
       },

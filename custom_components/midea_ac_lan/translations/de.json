@@ -503,6 +503,9 @@
       }
     },
     "switch": {
+      "child_lock": {
+        "name": "Kindersicherung"
+      },
       "anion": {
         "name": "Anion"
       },

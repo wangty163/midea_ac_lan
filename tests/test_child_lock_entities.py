@@ -1,6 +1,8 @@
 """Tests for washer and dryer child-lock entities."""
 
 import asyncio
+import json
+from pathlib import Path
 from types import SimpleNamespace
 from unittest import TestCase
 from unittest.mock import patch
@@ -58,3 +60,16 @@ class TestChildLockEntities(TestCase):
             )
 
         assert added_entities == [CHILD_LOCK]
+
+    @staticmethod
+    def test_child_lock_translation_exists_for_lock_and_switch() -> None:
+        """Both platforms should resolve a child-lock name in every language."""
+        translations = (
+            Path(__file__).parents[1]
+            / "custom_components"
+            / "midea_ac_lan"
+            / "translations"
+        )
+        for path in translations.glob("*.json"):
+            entities = json.loads(path.read_text(encoding="utf-8"))["entity"]
+            assert entities["switch"]["child_lock"] == entities["lock"]["child_lock"]

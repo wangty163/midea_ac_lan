@@ -533,6 +533,9 @@
       }
     },
     "switch": {
+      "child_lock": {
+        "name": "Блокировка"
+      },
       "anion": {
         "name": "Anion"
       },

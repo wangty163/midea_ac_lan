@@ -583,6 +583,9 @@
       }
     },
     "switch": {
+      "child_lock": {
+        "name": "童锁"
+      },
       "anion": {
         "name": "负离子开关"
       },

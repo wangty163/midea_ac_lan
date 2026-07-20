@@ -577,6 +577,9 @@
       }
     },
     "switch": {
+      "child_lock": {
+        "name": "Bloqueo infantil"
+      },
       "anion": {
         "name": "Anión"
       },
