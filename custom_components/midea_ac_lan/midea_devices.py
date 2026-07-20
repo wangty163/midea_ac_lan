@@ -2270,7 +2270,7 @@ MIDEA_DEVICES: dict[int, dict[str, dict[str, Any] | str]] = {
                 "icon": "mdi:water-outline",
             },
             CHILD_LOCK: {
-                "type": Platform.LOCK,
+                "type": Platform.SWITCH,
                 "translation_key": "child_lock",
                 "name": "Child Lock",
                 "default": True,
@@ -2387,7 +2387,7 @@ MIDEA_DEVICES: dict[int, dict[str, dict[str, Any] | str]] = {
                 "icon": "mdi:cup-water",
             },
             CHILD_LOCK: {
-                "type": Platform.LOCK,
+                "type": Platform.SWITCH,
                 "translation_key": "child_lock",
                 "name": "Child Lock",
                 "default": True,
