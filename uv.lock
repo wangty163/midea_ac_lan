@@ -17,7 +17,7 @@ resolution-markers = [
 ]
 dependencies = [
     { name = "cryptography", version = "42.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
-    { name = "josepy", version = "2.2.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
+    { name = "josepy", version = "1.15.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "pyopenssl", version = "24.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "pyrfc3339", marker = "python_full_version < '3.13'" },
     { name = "pytz", marker = "python_full_version < '3.13'" },
@@ -2316,9 +2316,12 @@ version = "1.15.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version == '3.13.*'",
+    "python_full_version < '3.13'",
 ]
 dependencies = [
+    { name = "cryptography", version = "42.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "cryptography", version = "43.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.13.*'" },
+    { name = "pyopenssl", version = "24.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "pyopenssl", version = "24.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.13.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c1/8a/cd416f56cd4492878e8d62701b4ad32407c5ce541f247abf31d6e5f3b79b/josepy-1.15.0.tar.gz", hash = "sha256:46c9b13d1a5104ffbfa5853e555805c915dcde71c2cd91ce5386e84211281223", size = 59310, upload-time = "2025-01-22T23:56:23.577Z" }
@@ -2332,10 +2335,8 @@ version = "2.2.0"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.14.2'",
-    "python_full_version < '3.13'",
 ]
 dependencies = [
-    { name = "cryptography", version = "42.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "cryptography", version = "46.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14.2'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/7f/ad/6f520aee9cc9618d33430380741e9ef859b2c560b1e7915e755c084f6bc0/josepy-2.2.0.tar.gz", hash = "sha256:74c033151337c854f83efe5305a291686cef723b4b970c43cfe7270cf4a677a9", size = 56500, upload-time = "2025-10-14T14:54:42.108Z" }
@@ -2463,6 +2464,7 @@ dev = [
     { name = "homeassistant", version = "2024.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "homeassistant", version = "2024.12.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.13.*'" },
     { name = "homeassistant", version = "2026.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14.2'" },
+    { name = "josepy", version = "1.15.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
     { name = "mutagen" },
     { name = "mypy" },
     { name = "numpy" },
@@ -2482,6 +2484,7 @@ dev = [
     { name = "homeassistant", marker = "python_full_version == '3.12.*'", specifier = "==2024.4.1" },
     { name = "homeassistant", marker = "python_full_version == '3.13.*'", specifier = "==2024.12.1" },
     { name = "homeassistant", marker = "python_full_version >= '3.14.2'", specifier = "==2026.3.1" },
+    { name = "josepy", marker = "python_full_version == '3.12.*'", specifier = "<2" },
     { name = "mutagen", specifier = "==1.47.0" },
     { name = "mypy", specifier = "==1.15.0" },
     { name = "numpy", specifier = "==2.0.0" },

@@ -48,3 +48,6 @@ jobs:
 
       - name: Pre-commit
         run: uv run pre-commit run --all-files --show-diff-on-failure
+
+      - name: Unit tests
+        run: uv run python -m unittest discover -s tests -v
