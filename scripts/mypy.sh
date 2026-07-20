@@ -14,7 +14,8 @@ export MYPY_CACHE_DIR=/tmp/mypy
 uv run mypy \
     --show-traceback \
     --no-incremental \
-    --python-version "${pyver}" \
-    --cache-dir "/tmp/mypy" \
-    --config-file mypy.ini \
-    .
+  --python-version "${pyver}" \
+  --cache-dir "/tmp/mypy" \
+  --config-file mypy.ini \
+  --explicit-package-bases \
+  .

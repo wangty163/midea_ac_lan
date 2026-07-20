@@ -34,10 +34,7 @@ from homeassistant.helpers.typing import ConfigType
 from midealocal.device import DeviceType, MideaDevice, ProtocolVersion
 from midealocal.devices import device_selector
 
-from .protocol_patches import apply_midealocal_patches
-
-apply_midealocal_patches()
-
+from .connection_watchdog import ConnectionHealth, watch_connection
 from .const import (
     ALL_PLATFORM,
     CONF_ACCOUNT,
@@ -50,7 +47,9 @@ from .const import (
     EXTRA_SWITCH,
 )
 from .midea_devices import MIDEA_DEVICES
-from .connection_watchdog import ConnectionHealth, watch_connection
+from .protocol_patches import apply_midealocal_patches
+
+apply_midealocal_patches()
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -260,7 +259,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
                 health.last_status = time.monotonic()
 
         device.register_update(mark_status_fresh)
-        setattr(device, "_midea_ac_lan_health_callback", mark_status_fresh)
+        device._midea_ac_lan_health_callback = mark_status_fresh  # type: ignore[attr-defined]  # noqa: SLF001
         device.open()
         # Forward the setup of an entry to all platforms
         await hass.config_entries.async_forward_entry_setups(config_entry, ALL_PLATFORM)
@@ -268,11 +267,11 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         # attached when the entry is loaded
         # and detached when it's unloaded
         config_entry.async_on_unload(config_entry.add_update_listener(update_listener))
-        watchdog = hass.async_create_task(
+        config_entry.async_create_background_task(
+            hass,
             watch_connection(hass, config_entry, device, health),
             f"midea_ac_lan_watchdog_{device_id}",
         )
-        config_entry.async_on_unload(watchdog.cancel)
         return True
     return False
 

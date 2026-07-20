@@ -6,10 +6,12 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
-from midealocal.device import MideaDevice
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+    from midealocal.device import MideaDevice
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,7 +36,6 @@ async def watch_connection(
     health: ConnectionHealth,
 ) -> None:
     """Recover a stale socket, then reload only if the thread cannot recover."""
-
     await asyncio.sleep(STARTUP_GRACE_SECONDS)
     while not hass.is_stopping:
         now = time.monotonic()
@@ -44,16 +45,18 @@ async def watch_connection(
         elif health.reconnect_requested_at is None:
             health.reconnect_requested_at = now
             _LOGGER.warning(
-                "Appliance [%s] has no status update for %.0fs; forcing socket reconnect",
+                "Appliance [%s] has no status update for %.0fs; "
+                "forcing socket reconnect",
                 device.device_id,
                 stale_for,
             )
             await hass.async_add_executor_job(device.close_socket)
         elif now - health.reconnect_requested_at >= RECONNECT_GRACE_SECONDS:
             _LOGGER.error(
-                "Appliance [%s] did not recover after socket reconnect; reloading entry",
+                "Appliance [%s] did not recover after socket reconnect; "
+                "reloading entry",
                 device.device_id,
             )
-            await hass.config_entries.async_reload(entry.entry_id)
+            hass.config_entries.async_schedule_reload(entry.entry_id)
             return
         await asyncio.sleep(CHECK_INTERVAL_SECONDS)

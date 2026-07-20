@@ -14,7 +14,10 @@ module_path = (
     / "midea_ac_lan"
     / "protocol_patches.py"
 )
-spec = importlib.util.spec_from_file_location("midea_protocol_patches_test", module_path)
+spec = importlib.util.spec_from_file_location(
+    "midea_protocol_patches_test",
+    module_path,
+)
 assert spec is not None and spec.loader is not None
 protocol_patches = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(protocol_patches)
