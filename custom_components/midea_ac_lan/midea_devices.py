@@ -50,6 +50,20 @@ from midealocal.devices.x26 import DeviceAttributes as X26Attributes
 from midealocal.devices.x34 import DeviceAttributes as X34Attributes
 from midealocal.devices.x40 import DeviceAttributes as X40Attributes
 
+from .protocol_patches import (
+    BUCKET_CLEAN_SWITCH,
+    CHILD_LOCK,
+    DAMP_DRY_SIGNAL,
+    DETERGENT_LACK,
+    DOOR_OPENED,
+    DRYER_LIGHT,
+    ECO_DRY_SWITCH,
+    PREVENT_WRINKLE_SWITCH,
+    REMIND_SOUND,
+    SOFTENER_LACK,
+    STEAM_SWITCH,
+)
+
 """
 Entity Naming Rule:
 
@@ -2255,6 +2269,30 @@ MIDEA_DEVICES: dict[int, dict[str, dict[str, Any] | str]] = {
                 "name": "Dirty_degree",
                 "icon": "mdi:water-outline",
             },
+            CHILD_LOCK: {
+                "type": Platform.LOCK,
+                "translation_key": "child_lock",
+                "name": "Child Lock",
+                "default": True,
+            },
+            DOOR_OPENED: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Door",
+                "device_class": BinarySensorDeviceClass.DOOR,
+                "default": True,
+            },
+            DETERGENT_LACK: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Detergent Shortage",
+                "device_class": BinarySensorDeviceClass.PROBLEM,
+                "default": True,
+            },
+            SOFTENER_LACK: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Softener Shortage",
+                "device_class": BinarySensorDeviceClass.PROBLEM,
+                "default": True,
+            },
         },
     },
     0xDC: {
@@ -2347,6 +2385,48 @@ MIDEA_DEVICES: dict[int, dict[str, dict[str, Any] | str]] = {
                 "translation_key": "water_box",
                 "name": "Water Box",
                 "icon": "mdi:cup-water",
+            },
+            CHILD_LOCK: {
+                "type": Platform.LOCK,
+                "translation_key": "child_lock",
+                "name": "Child Lock",
+                "default": True,
+            },
+            DRYER_LIGHT: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Drum Light",
+                "device_class": BinarySensorDeviceClass.LIGHT,
+                "default": True,
+            },
+            PREVENT_WRINKLE_SWITCH: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Prevent Wrinkle",
+                "default": True,
+            },
+            REMIND_SOUND: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Reminder Sound",
+                "default": True,
+            },
+            STEAM_SWITCH: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Steam",
+                "default": True,
+            },
+            DAMP_DRY_SIGNAL: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Damp Dry Signal",
+                "default": True,
+            },
+            ECO_DRY_SWITCH: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Eco Dry",
+                "default": True,
+            },
+            BUCKET_CLEAN_SWITCH: {
+                "type": Platform.BINARY_SENSOR,
+                "name": "Drum Clean",
+                "default": True,
             },
         },
     },

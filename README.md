@@ -1,8 +1,8 @@
 # Midea AC LAN
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
-[![Stable](https://img.shields.io/github/v/release/wuwentao/midea_ac_lan)](https://github.com/wuwentao/midea_ac_lan/releases/latest)
-[![Super-Linter](https://github.com/wuwentao/midea_ac_lan/actions/workflows/linter.yml/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![Stable](https://img.shields.io/github/v/release/wangty163/midea_ac_lan)](https://github.com/wangty163/midea_ac_lan/releases/latest)
+[![Super-Linter](https://github.com/wangty163/midea_ac_lan/actions/workflows/linter.yml/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 English | [简体中文](README_hans.md) | [Discord Chat](https://discord.com/invite/ZWdd2fXndn) | [QQ Group](https://qm.qq.com/q/l53SGEwlZ6)
 
@@ -100,12 +100,12 @@ please check your device documents and supported feature in below table links.
 > run this script in HA Terminal or SSH add-on
 
 ```shell
-wget -O - https://github.com/wuwentao/midea_ac_lan/raw/main/scripts/install.sh | ARCHIVE_TAG=latest bash -
+wget -O - https://github.com/wangty163/midea_ac_lan/raw/main/scripts/install.sh | ARCHIVE_TAG=latest bash -
 ```
 
 ### Option 3: Manual Install
 
-1. Download `midea_ac_lan.zip` from [Latest Release](https://github.com/wuwentao/midea_ac_lan/releases/latest)
+1. Download `midea_ac_lan.zip` from [Latest Release](https://github.com/wangty163/midea_ac_lan/releases/latest)
 2. copy `midea_ac_lan.zip` to `/custom_components/midea_ac_lan` in Home Assistant.
 3. **Restart Home Assistant**.
 
@@ -197,7 +197,7 @@ please refer to [Debug and Test](doc/debug.md)
 Development uses [uv](https://docs.astral.sh/uv/) (no Docker required). Install uv, then:
 
 ```shell
-git clone https://github.com/wuwentao/midea_ac_lan.git
+git clone https://github.com/wangty163/midea_ac_lan.git
 cd midea_ac_lan
 ./scripts/setup.sh
 ```

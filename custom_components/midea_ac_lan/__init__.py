@@ -10,6 +10,7 @@ integration load process:
 """
 
 import logging
+import time
 from typing import Any, cast
 
 import homeassistant.helpers.config_validation as cv
@@ -33,6 +34,10 @@ from homeassistant.helpers.typing import ConfigType
 from midealocal.device import DeviceType, MideaDevice, ProtocolVersion
 from midealocal.devices import device_selector
 
+from .protocol_patches import apply_midealocal_patches
+
+apply_midealocal_patches()
+
 from .const import (
     ALL_PLATFORM,
     CONF_ACCOUNT,
@@ -45,6 +50,7 @@ from .const import (
     EXTRA_SWITCH,
 )
 from .midea_devices import MIDEA_DEVICES
+from .connection_watchdog import ConnectionHealth, watch_connection
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -93,9 +99,9 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:  # noqa:
         ).items():
             if (
                 attribute.get("type") in EXTRA_SWITCH
-                and attribute_name.value not in attributes
+                and str(attribute_name) not in attributes
             ):
-                attributes.append(attribute_name.value)
+                attributes.append(str(attribute_name))
 
     def service_set_attribute(service: Any) -> None:  # noqa: ANN401
         """Set service attribute func."""
@@ -242,18 +248,31 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     if device:
         if refresh_interval is not None:
             device.set_refresh_interval(refresh_interval)
-        device.open()
         if DOMAIN not in hass.data:
             hass.data[DOMAIN] = {}
         if DEVICES not in hass.data[DOMAIN]:
             hass.data[DOMAIN][DEVICES] = {}
         hass.data[DOMAIN][DEVICES][device_id] = device
+        health = ConnectionHealth(last_status=time.monotonic())
+
+        def mark_status_fresh(status: dict[str, Any]) -> None:
+            if any(key != "available" for key in status):
+                health.last_status = time.monotonic()
+
+        device.register_update(mark_status_fresh)
+        setattr(device, "_midea_ac_lan_health_callback", mark_status_fresh)
+        device.open()
         # Forward the setup of an entry to all platforms
         await hass.config_entries.async_forward_entry_setups(config_entry, ALL_PLATFORM)
         # Listener `update_listener` is
         # attached when the entry is loaded
         # and detached when it's unloaded
         config_entry.async_on_unload(config_entry.add_update_listener(update_listener))
+        watchdog = hass.async_create_task(
+            watch_connection(hass, config_entry, device, health),
+            f"midea_ac_lan_watchdog_{device_id}",
+        )
+        config_entry.async_on_unload(watchdog.cancel)
         return True
     return False
 
@@ -273,8 +292,13 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> 
     if device_id is not None:
         dm = hass.data[DOMAIN][DEVICES].get(device_id)
         if dm is not None:
+            health_callback = getattr(dm, "_midea_ac_lan_health_callback", None)
+            if health_callback is not None:
+                dm.unregister_update(health_callback)
             try:
-                dm.close()
+                await hass.async_add_executor_job(dm.close)
+                if dm.is_alive():
+                    await hass.async_add_executor_job(dm.join, 5)
             except (OSError, ConnectionError, AttributeError) as e:
                 _LOGGER.warning("Failed to close Midea socket cleanly: %s", e)
         hass.data[DOMAIN][DEVICES].pop(device_id)

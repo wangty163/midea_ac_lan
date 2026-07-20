@@ -63,7 +63,7 @@
 
    > 例如: 有一个github的PR, 需要修改`light.py`,
    > 首先获取github PR中对应文件的raw file URL, 然后使用 `wget` 命令带上 `-O light.py` 去下载文件并覆盖已经存在的`light.py`即可
-   > `wget https://github.com/wuwentao/midea_ac_lan/raw/xxxx/custom_components/midea_ac_lan/light.py -O light.py`
+   > `wget https://github.com/wangty163/midea_ac_lan/raw/xxxx/custom_components/midea_ac_lan/light.py -O light.py`
 
 ### 修改`midealocal`源代码
 

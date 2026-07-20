@@ -64,7 +64,7 @@ if you need to manual edit or change source code in `midea_ac_lan` for test purp
 5. reboot HA to load it.
 
    > for example: there is a github PR exist, and we should manual update `light.py`,
-   > we can got github raw file URL, and use below `wget` command with `-O light.py` to download latest file and overwrite exist `light.py` > `wget https://github.com/wuwentao/midea_ac_lan/raw/xxxx/custom_components/midea_ac_lan/light.py -O light.py`
+   > we can got github raw file URL, and use below `wget` command with `-O light.py` to download latest file and overwrite exist `light.py` > `wget https://github.com/wangty163/midea_ac_lan/raw/xxxx/custom_components/midea_ac_lan/light.py -O light.py`
 
 ### edit `midealocal` source code
 

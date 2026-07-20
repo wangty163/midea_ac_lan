@@ -2,12 +2,12 @@
 #
 # origin https://github.com/al-one/hass-xiaomi-miot/blob/master/install.sh
 #
-# wget -q -O - https://raw.githubusercontent.com/wuwentao/midea_ac_lan/main/scripts/install.sh | bash -
-# wget -q -O - https://raw.githubusercontent.com/wuwentao/midea_ac_lan/main/scripts/install.sh | ARCHIVE_TAG=v0.4.2 bash -
+# wget -q -O - https://raw.githubusercontent.com/wangty163/midea_ac_lan/main/scripts/install.sh | bash -
+# wget -q -O - https://raw.githubusercontent.com/wangty163/midea_ac_lan/main/scripts/install.sh | ARCHIVE_TAG=v0.4.2 bash -
 set -e
 
 [ -z "$DOMAIN" ] && DOMAIN="midea_ac_lan"
-[ -z "$REPO_PATH" ] && REPO_PATH="wuwentao/midea_ac_lan"
+[ -z "$REPO_PATH" ] && REPO_PATH="wangty163/midea_ac_lan"
 REPO_NAME=$(basename "$REPO_PATH")
 
 [ -z "$ARCHIVE_TAG" ] && ARCHIVE_TAG="$1"
