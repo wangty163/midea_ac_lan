@@ -157,5 +157,6 @@ class MideaEntity(Entity):
             )
             return
 
-        if self._entity_key in status or "available" in status:
+        tracked_attribute = self._config.get("attribute", self._entity_key)
+        if tracked_attribute in status or "available" in status:
             self.schedule_update_ha_state()

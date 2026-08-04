@@ -26,6 +26,7 @@ DBGeneralMessageBody = protocol_patches.DBGeneralMessageBody
 DCGeneralMessageBody = protocol_patches.DCGeneralMessageBody
 MessageDBChildLock = protocol_patches.MessageDBChildLock
 MessageDCChildLock = protocol_patches.MessageDCChildLock
+MessageDCDryerProgram = protocol_patches.MessageDCDryerProgram
 
 
 class ProtocolPatchTests(unittest.TestCase):
@@ -71,6 +72,27 @@ class ProtocolPatchTests(unittest.TestCase):
             MessageDCChildLock(0, False).serialize().hex(),
             "aa2bdc0000000000000202ffffffffffffffffffffffcfffffffffffffffffffffffffffffff00ffffffff44",
         )
+
+    def test_dryer_program_command_changes_only_program_byte(self) -> None:
+        message = MessageDCDryerProgram(0, "small_piece_dry")
+        body = message._body
+        unchanged = 0xFF
+
+        self.assertEqual(
+            message.serialize().hex(),
+            "aa2bdc0000000000000202ffffff2affffffffffffffffffffffffffffffffffffffffffffff00ffffffffe9",
+        )
+        self.assertEqual(len(body), 32)
+        self.assertEqual(body[0], 0xFF)  # power unchanged
+        self.assertEqual(body[1], 0xFF)  # start/control status unchanged
+        self.assertEqual(body[3], 0x2A)  # small_piece_dry
+        self.assertEqual(body[27], 0x00)  # reserved byte required by codec
+        self.assertTrue(all(value == unchanged for value in body[4:27]))
+        self.assertTrue(all(value == unchanged for value in body[28:]))
+
+    def test_dryer_program_rejects_unknown_option(self) -> None:
+        with self.assertRaises(ValueError):  # noqa: PT027
+            MessageDCDryerProgram(0, "not_a_program")
 
     def test_washer_fixed_report_bits(self) -> None:
         body = bytearray(32)

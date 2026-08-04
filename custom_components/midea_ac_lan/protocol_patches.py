@@ -14,6 +14,7 @@ from typing import Any
 from midealocal.device import MideaDevice
 from midealocal.devices.db import MideaDBDevice
 from midealocal.devices.db.message import DBGeneralMessageBody, MessageDBBase
+from midealocal.devices.dc import DeviceAttributes as DCAttributes
 from midealocal.devices.dc import MideaDCDevice
 from midealocal.devices.dc.message import DCGeneralMessageBody, MessageDCBase
 from midealocal.message import ListTypes, MessageType
@@ -31,6 +32,72 @@ STEAM_SWITCH = "steam_switch"
 DAMP_DRY_SIGNAL = "damp_dry_signal"
 ECO_DRY_SWITCH = "eco_dry_switch"
 BUCKET_CLEAN_SWITCH = "bucket_clean_switch"
+DRYER_PROGRAM = "dryer_program"
+
+# Exact options retained by the TH100-H93WZ (subtype 14388) cloud entity and
+# encoded by its model-specific T_0000_DC_14388 codec.
+DRYER_PROGRAMS: dict[str, int] = {
+    "cotton": 0,
+    "fiber": 1,
+    "mixed_wash": 2,
+    "jean": 3,
+    "bedsheet": 4,
+    "outdoor": 5,
+    "down_jacket": 6,
+    "plush": 7,
+    "wool": 8,
+    "dehumidify": 9,
+    "cold_air_fresh_air": 10,
+    "hot_air_dry": 11,
+    "sport_clothes": 12,
+    "underwear": 13,
+    "baby_clothes": 14,
+    "shirt": 15,
+    "standard": 16,
+    "quick_dry": 17,
+    "fresh_air": 18,
+    "low_temp_dry": 19,
+    "eco_dry": 20,
+    "quick_dry_30": 21,
+    "towel": 22,
+    "intelligent_dry": 23,
+    "steam_care": 24,
+    "big": 25,
+    "fixed_time_dry": 26,
+    "night_dry": 27,
+    "bracket_dry": 28,
+    "western_trouser": 29,
+    "dehumidification": 30,
+    "smart_dry": 31,
+    "four_piece_suit": 32,
+    "warm_clothes": 33,
+    "quick_dry_20": 34,
+    "steam_sterilize": 35,
+    "enzyme": 36,
+    "big_60": 37,
+    "steam_no_iron": 38,
+    "air_wash": 39,
+    "bed_clothes": 40,
+    "little_fast_dry": 41,
+    "small_piece_dry": 42,
+    "big_dry": 43,
+    "wool_nurse": 44,
+    "sun_quilt": 45,
+    "fresh_remove_smell": 46,
+    "bucket_self_clean": 47,
+    "silk": 48,
+    "sterilize": 49,
+    "heavy_duty": 50,
+    "towel_warmer": 51,
+    "air_fluff": 52,
+    "delicates": 53,
+    "time_drying_30": 54,
+    "time_drying_60": 55,
+    "time_drying_90": 56,
+    "dry_softnurse": 57,
+    "uniforms": 64,
+    "remove_electricity": 65,
+}
 
 _PATCH_MARKER = "_midea_ac_lan_protocol_patch_applied"
 
@@ -74,6 +141,31 @@ class MessageDCChildLock(MessageDCBase):
         # Other two-bit fields use 0b11 to mean "unchanged".
         body = bytearray([0xFF] * 32)
         body[11] = 0xDF if self.enabled else 0xCF
+        body[27] = 0x00
+        return body
+
+
+class MessageDCDryerProgram(MessageDCBase):
+    """Set only the clothes-dryer program field."""
+
+    def __init__(self, protocol_version: int, program: str) -> None:
+        super().__init__(
+            protocol_version=protocol_version,
+            message_type=MessageType.set,
+            body_type=ListTypes.X02,
+        )
+        if program not in DRYER_PROGRAMS:
+            msg = f"Unsupported dryer program: {program}"
+            raise ValueError(msg)
+        self.program = program
+
+    @property
+    def _body(self) -> bytearray:
+        # Full-frame positions 12..43 from T_0000_DC_14388. 0xff means
+        # unchanged, so this frame cannot alter power (byte 12) or control
+        # status/start (byte 13). Program is byte 15; byte 39 is reserved.
+        body = bytearray([0xFF] * 32)
+        body[3] = DRYER_PROGRAMS[self.program]
         body[27] = 0x00
         return body
 
@@ -131,6 +223,7 @@ def _patch_devices() -> None:
 
     def dc_init(self: MideaDCDevice, *args: Any, **kwargs: Any) -> None:
         original_dc_init(self, *args, **kwargs)
+        self._program.update({value: key for key, value in DRYER_PROGRAMS.items()})
         self._attributes.update(
             {
                 CHILD_LOCK: False,
@@ -153,6 +246,13 @@ def _patch_devices() -> None:
         original_db_set(self, attr, value)
 
     def dc_set(self: MideaDCDevice, attr: str, value: bool | int | str) -> None:
+        if attr == DCAttributes.program:
+            if not isinstance(value, str):
+                raise TypeError("[dc] program expects str")
+            self.build_send(
+                MessageDCDryerProgram(self._message_protocol_version, value)
+            )
+            return
         if attr == CHILD_LOCK:
             if not isinstance(value, bool):
                 raise TypeError("[dc] child_lock expects bool")
