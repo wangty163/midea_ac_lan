@@ -79,6 +79,14 @@ ignore = [
   "PLR0915", # Too many statements
   "T201",    # `print` found
 ]
+"scripts/check_repository_hygiene.py" = [
+  "DOC201",  # CLI helpers keep concise imperative docstrings
+  "DOC501",  # CLI validation errors are reported by main
+  "PLR0916", # Explicit forbidden-artifact predicates are easier to audit
+  "PLW0717", # One top-level CLI error boundary is intentional
+  "S404",    # Git is resolved to an absolute executable before invocation
+  "T201",    # This command reports results directly to stdout/stderr
+]
 "custom_components/midea_ac_lan/protocol_patches.py" = [
   "ANN401", # Runtime monkey patches must preserve third-party variadic signatures
   "COM812", # Legacy patch code is left unchanged by this lifecycle fix

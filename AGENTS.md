@@ -81,3 +81,25 @@ pip install -r requirements-dev-3.12.txt   # or -3.13 / -3.14
 - **Releasing** bumps `version` in `manifest.json`, which must be valid semver **without a `v` prefix** (HACS 2.0+ rejects `v`-prefixed); enforced by `.github/workflows/release.yml`.
 - **Adding a new device type**: bump the `midea-local` pin in `manifest.json`, add a `0xXX` entry to `MIDEA_DEVICES` in `midea_devices.py`, add a `doc/<TYPE>.md` (+ `_hans` Chinese variant) and a row in `README.md`'s supported-appliances table. Add UI strings to `custom_components/midea_ac_lan/translations/en.json` (and other locales) keyed by `translation_key`.
 - CI validation: `.github/workflows/linter.yml` (pre-commit) and `validate.yml` (HACS + hassfest).
+
+## NAS release and live-deployment contract
+
+This GitHub repository is the only canonical source for the integration. A
+change copied only into Home Assistant's live `custom_components` directory is
+unfinished work, not a deployment.
+
+- Preserve any live-only difference by bringing it back to a topic branch,
+  adding tests, and publishing it through the normal pull-request and release
+  process. Never discard an unexplained live diff.
+- Do not commit AppleDouble files, caches, bytecode, editor files, one-shot
+  probes or migrations, backup copies, packet captures, databases, `.env`,
+  credentials, tokens, or Home Assistant `.storage` content.
+- Keep temporary diagnostics in an OS temporary directory and rollback
+  snapshots outside the live integration directory.
+- A NAS deployment is complete only after the reviewed change is merged, an
+  installable `v<manifest version>` GitHub release exists, HACS installs that
+  exact repository/version/commit, and the live tree matches the release
+  byte-for-byte excluding only `__pycache__` and `*.pyc`.
+- Verify full repository checks, Home Assistant health/startup logs, and the
+  affected real entities or device behavior. Do not declare completion with a
+  dirty worktree, failed checks, HACS metadata drift, or a manual overlay.

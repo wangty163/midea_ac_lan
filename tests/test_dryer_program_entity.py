@@ -4,6 +4,7 @@ import asyncio
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from typing import TYPE_CHECKING, cast
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -18,6 +19,9 @@ from custom_components.midea_ac_lan.protocol_patches import (
     DRYER_PROGRAMS,
 )
 
+if TYPE_CHECKING:
+    from midealocal.device import MideaDevice
+
 
 class FakeDryer:
     """Minimal dryer used by the select entity tests."""
@@ -29,7 +33,7 @@ class FakeDryer:
 
     def __init__(self) -> None:
         """Initialize fake dryer state."""
-        self.attributes = {
+        self.attributes: dict[str, object] = {
             "power": False,
             "program": "mixed_wash",
             "status": "idle",
@@ -56,7 +60,10 @@ class TestDryerProgramEntity(TestCase):
     @staticmethod
     def test_program_select_is_default_only_for_verified_subtype() -> None:
         """Only subtype 14388 should receive the default program select."""
-        config = MIDEA_DEVICES[0xDC]["entities"][DRYER_PROGRAM]
+        entities = MIDEA_DEVICES[0xDC]["entities"]
+        assert isinstance(entities, dict)
+        config = entities[DRYER_PROGRAM]
+        assert isinstance(config, dict)
         assert config["type"] == Platform.SELECT
         assert config["default"] is True
         assert config["subtypes"] == {14388}
@@ -71,7 +78,7 @@ class TestDryerProgramEntity(TestCase):
             )
             hass = SimpleNamespace(data={DOMAIN: {DEVICES: {123: device}}})
             config_entry = SimpleNamespace(data={"device_id": 123}, options={})
-            added_entities = []
+            added_entities: list[object] = []
 
             with patch.object(
                 select,
@@ -91,7 +98,7 @@ class TestDryerProgramEntity(TestCase):
     def test_program_change_requires_powered_standby_dryer(self) -> None:
         """Changing the program must never power on or start the dryer."""
         device = FakeDryer()
-        entity = select.MideaSelect(device, DRYER_PROGRAM)
+        entity = select.MideaSelect(cast("MideaDevice", device), DRYER_PROGRAM)
 
         assert entity.current_option == "mixed_wash"
 
@@ -114,7 +121,7 @@ class TestDryerProgramEntity(TestCase):
         """An unknown device value should yield no current select option."""
         device = FakeDryer()
         device.attributes["program"] = 255
-        entity = select.MideaSelect(device, DRYER_PROGRAM)
+        entity = select.MideaSelect(cast("MideaDevice", device), DRYER_PROGRAM)
 
         assert entity.current_option is None
 
