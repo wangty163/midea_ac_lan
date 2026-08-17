@@ -45,11 +45,7 @@ def tracked_paths() -> list[PurePosixPath]:
         [git, "ls-files", "-z"],
         cwd=ROOT,
     )
-    return [
-        PurePosixPath(item.decode("utf-8"))
-        for item in output.split(b"\0")
-        if item
-    ]
+    return [PurePosixPath(item.decode("utf-8")) for item in output.split(b"\0") if item]
 
 
 def artifact_findings(paths: list[PurePosixPath]) -> list[str]:
@@ -60,9 +56,7 @@ def artifact_findings(paths: list[PurePosixPath]) -> list[str]:
         lowered = name.casefold()
         if (
             name in FORBIDDEN_EXACT_NAMES
-            or name.startswith("._")
-            or name.startswith("__tmp")
-            or name.startswith("zz_")
+            or name.startswith(("._", "__tmp", "zz_"))
             or lowered.endswith("~")
             or any(part in FORBIDDEN_PARTS for part in path.parts)
             or any(lowered.endswith(suffix) for suffix in FORBIDDEN_SUFFIXES)
@@ -95,13 +89,11 @@ def validate_tag(versions: list[str]) -> None:
         return
     tag = ref.removeprefix(prefix)
     expected = {
-        version if version.startswith("v") else f"v{version}"
-        for version in versions
+        version if version.startswith("v") else f"v{version}" for version in versions
     }
     if tag not in expected:
         raise ValueError(
-            f"release tag {tag!r} does not match manifest tag(s) "
-            f"{sorted(expected)}"
+            f"release tag {tag!r} does not match manifest tag(s) {sorted(expected)}",
         )
 
 
